@@ -49,10 +49,11 @@ public class MainActivity extends Activity {
     int selected = 0;
     int cont = 0;
     int countClicks = 0;
-    int numSquareCall = 5;
+    int numSquareCall = 5; //default
     int stars = 0;
     int level = 1;
-    int life = 5;
+    int lifeDefault = 3;
+    int life;
     int timer = 700;
     Boolean active;
     Boolean introStatus;
@@ -66,6 +67,7 @@ public class MainActivity extends Activity {
 
         /*ConstraintLayout*/
         cl = findViewById(R.id.cl);
+
 
         /*Buttons*/
         btnStart = findViewById( R.id.btnStart );
@@ -140,7 +142,7 @@ public class MainActivity extends Activity {
         int i = r.nextInt(5);
 
         if (i == 0) {
-            cl.setBackgroundResource(R.drawable.fundo);
+            cl.setBackgroundResource(R.drawable.fundo1);
         }
         if (i == 1) {
             cl.setBackgroundResource(R.drawable.fundo1);
@@ -200,12 +202,15 @@ public class MainActivity extends Activity {
         img.setImageResource( R.drawable.ballblack );
         life = life - 1;
         life();
-        if (life <= 0) {
-            gameOver( null );
-        }
+
         if (life >= 1) {
             countClicks = countClicks - 1;
         }
+
+        if (life <= 0) {
+            gameOver( null );
+        }
+
     }
 
 
@@ -213,8 +218,8 @@ public class MainActivity extends Activity {
         playAudio( snClick );
         checkedList.add( selected );
         countClicks = countClicks + 1;
-        // txtList.setText( sortList.toString() );
-        // txtSelected.setText( checkedList.toString() );
+         txtList.setText( sortList.toString() );
+         txtSelected.setText( checkedList.toString() );
 
         if (sortList.contains( selected )) {
             stars = stars + 100;
@@ -239,6 +244,7 @@ public class MainActivity extends Activity {
         }
 
         img.setEnabled( false );
+
     }
 
 
@@ -871,7 +877,6 @@ public class MainActivity extends Activity {
 
 
         }
-
     }
 
     public void delay(final int milliseconds) {
@@ -989,7 +994,7 @@ public class MainActivity extends Activity {
         txtLevel.setText( "Level:" + level );
         stars = 0;
         txtScore.setText( "STARS:" + stars );
-        life = 3;
+        life = lifeDefault;
         life();
         sortList.clear();
         checkedList.clear();
