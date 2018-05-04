@@ -1,12 +1,20 @@
 package game.com.br.squaresmarked;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.media.MediaPlayer;
 import android.os.Handler;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.constraint.ConstraintLayout;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
@@ -18,9 +26,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     /*Variables*/
+
+    SQLiteDatabase database;
+
 
     /*ConstraintLayout*/
     ConstraintLayout cl;
@@ -64,6 +75,16 @@ public class MainActivity extends Activity {
         setContentView( R.layout.activity_main );
 
         /*Set objects*/
+
+
+        database = openOrCreateDatabase( "db", MODE_PRIVATE, null); //null default
+        database.execSQL( "CREATE TABLE IF NOT EXISTS ranking(name VARCHAR, stars INT(8) )" );
+        database.execSQL( "INSERT INTO ranking (name, stars ) values ( 'jogador1', 1000)" );
+
+
+
+
+
 
         /*ConstraintLayout*/
         cl = findViewById(R.id.cl);
@@ -218,8 +239,8 @@ public class MainActivity extends Activity {
         playAudio( snClick );
         checkedList.add( selected );
         countClicks = countClicks + 1;
-         txtList.setText( sortList.toString() );
-         txtSelected.setText( checkedList.toString() );
+     //    txtList.setText( sortList.toString() );
+       //  txtSelected.setText( checkedList.toString() );
 
         if (sortList.contains( selected )) {
             stars = stars + 100;
@@ -235,8 +256,13 @@ public class MainActivity extends Activity {
             Collections.sort( sortList );
 
         if (checkedList.equals( sortList )) {
+
+
+
             newLevel();
-        } else if (checkedList.size() >= sortList.size()) {
+
+
+        } else if (checkedList.size() > sortList.size()) {
             if (life <= 0) {
                 gameOver( null );
             } else
@@ -246,7 +272,6 @@ public class MainActivity extends Activity {
         img.setEnabled( false );
 
     }
-
 
     public void img1Click(View view) {
         if (active) {
@@ -660,6 +685,9 @@ public class MainActivity extends Activity {
             sortList.add( numeros.get( i ) );
         }
 
+
+
+
         for (int i = 0; i < sortList.size(); i++) {
             if (sortList.get( i ) == 1) {
                 img1.setImageResource( R.drawable.star );
@@ -974,7 +1002,7 @@ public class MainActivity extends Activity {
     }
 
     public void cleanSort(View view) {
-        life();
+         life();
         sortList.clear();
         checkedList.clear();
         countClicks = 0;
@@ -1013,6 +1041,8 @@ public class MainActivity extends Activity {
         txtList.setText( "" );
         txtSelected.setText( "" );
         active = false;
+        database.execSQL( "INSERT INTO ranking (name, stars ) values ( 'jogador1', 1000)" );
+        showranking();
     }
 
 
@@ -1027,8 +1057,6 @@ public class MainActivity extends Activity {
             stars = stars + timer;
             numSquareCall = numSquareCall + 1;
             myAlert.setIcon( R.drawable.heart );
-
-            if (life < 3)
                 life = life + 1;
             timer = timer + 175;
             playAudio( snLife );
@@ -1038,6 +1066,10 @@ public class MainActivity extends Activity {
             myAlert.setIcon( R.drawable.star );
             timer = timer - 25;
             stars = stars + 250;
+
+
+
+
         }
         myAlert.setCancelable( false );
         myAlert.setPositiveButton( "Continue", new DialogInterface.OnClickListener() {
@@ -1073,6 +1105,16 @@ public class MainActivity extends Activity {
         myAlert.create();
         myAlert.show();
     }
+
+    public void showranking(){
+        Intent intent = new Intent(MainActivity.this,Ranking.class);
+        intent.putExtra("stars", stars);
+        intent.putExtra("level", level);
+        startActivity(intent);
+    }
+
+
+
 }
 
 
